@@ -15,8 +15,8 @@ import os
 def scrape_website(start_page = 1, entries = 200, relpath = "hypotheticalzeolite", log = ".zeo_history"):
 
     logfile = os.path.join(relpath,log)
-    if os.path.exists(relpath):
-        history =  tuple(open(logifle).read().splitlines())
+    if os.path.exists(logfile):
+        history =  tuple(open(logfile).read().splitlines())
     else:
         history = tuple()
     url = constant.CONFIRMED_DATA_URL
@@ -33,7 +33,7 @@ def scrape_website(start_page = 1, entries = 200, relpath = "hypotheticalzeolite
                     if link2.string == "CIF file":
                         rel_soup = BeautifulSoup(str(link2), 'html.parser')
                         cif_link =   "".join([url_p.scheme+"://", url_p.netloc, rel_soup.a['href']])
-                        save2disk(cif_link, cif_fname, logfile)
+                        save2disk(cif_link, cif_fname, logfile, relpath)
                         time.sleep(5)
         
                         
@@ -51,20 +51,21 @@ def get_elements(url, element, attrib):
 
 
     
-def save2disk(cif_link, cif_name, logfile  ):
+def save2disk(cif_link, cif_fname, logfile, relpath):
     
     
-    cif_data = urlopen(download)
+    
     if not os.path.exists(relpath):
          os.mkdir(relpath)
          
-    cif_path = os.path.join(relpath, cfname)
-    with open(cif_path, 'w') as cif_fobj:
+    cif_path = os.path.join(relpath, cif_fname)
+    cif_data = urlopen(cif_link)
+    with open(cif_path, 'wb') as cif_fobj:
         cif_fobj.write(cif_data.read())
 
     log_fobj = open(logfile, 'a+')
-    sys.stdout.write(cif_path)
-    print(cif_name, file=logfile)  
+    print(cif_path)
+    print(cif_fname, file=log_fobj)  
 
     
 scrape_website(start_page = 1, entries = 200)    
