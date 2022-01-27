@@ -59,8 +59,6 @@ def get_elements(url, element, attrib):
     
 def save2disk(cif_link, cif_fname, logfile, relpath):
     
-    
-    
     if not os.path.exists(relpath):
          os.mkdir(relpath)
          
@@ -72,6 +70,10 @@ def save2disk(cif_link, cif_fname, logfile, relpath):
     log_fobj = open(logfile, 'a+')
     print(cif_path)
     print(cif_fname, file=log_fobj)  
+
+
+
+
     
 if __name__  ==  "__main__":
     scrape_website(total_entries =  5)    
