@@ -4,6 +4,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import itertools as it
 import constant
+import pprint
 import requests
 import time
 import sys
@@ -11,7 +12,7 @@ import os
 
 
 
-def scrape_website(total_entries,  start_page = 1, page_limit = 200,  relpath = "hypotheticalzeolite", log = ".zeo_history"):
+def scrape_website(total_entries,  start_page, page_limit = 200,  relpath = "hypotheticalzeolite", log = ".zeo_history"):
 
     logfile = os.path.join(relpath,log)
     if os.path.exists(logfile):
@@ -23,10 +24,9 @@ def scrape_website(total_entries,  start_page = 1, page_limit = 200,  relpath = 
     
     entry_counter  = 0    
     for page in it.count(start=start_page):
-        url  = url.format(page, page_limit)
-        for link1 in get_elements(url, 'a', 'href'):
-            if "viewer" in link1:
-                follow = "".join([url_p.scheme+"://", url_p.netloc, link1])
+        elements_raw = list(get_elements(url.format(page = page, pp = page_limit), 'a', 'href'))        
+        links =  ["".join([url_p.scheme+"://", url_p.netloc, ref]) for ref in elements_raw if "viewer" in ref ]
+        for follow in links:
                 cif_fname = urlparse(follow).query.split("=")[1]
                 if cif_fname in history:
                     entry_counter += 1
@@ -38,10 +38,10 @@ def scrape_website(total_entries,  start_page = 1, page_limit = 200,  relpath = 
                         cif_link =   "".join([url_p.scheme+"://", url_p.netloc, rel_soup.a['href']])
                         save2disk(cif_link, cif_fname, logfile, relpath)
                         entry_counter += 1
-                        print(entry_counter, cif_fname)
+                        print(entry_counter,page,cif_fname)
                         if entry_counter == total_entries:
                             sys.exit(0)
-                        time.sleep(3)
+                        time.sleep(5)
                         
                         
     
@@ -73,5 +73,5 @@ def save2disk(cif_link, cif_fname, logfile, relpath):
 
     
 if __name__  ==  "__main__":
-    scrape_website(start_page = 200, total_entries =  100000)    
+    scrape_website(start_page = 600, total_entries =  100000)    
     
